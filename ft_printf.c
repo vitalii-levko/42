@@ -6,7 +6,7 @@
 /*   By: vlevko <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/30 22:18:36 by vlevko            #+#    #+#             */
-/*   Updated: 2018/01/23 17:47:27 by vlevko           ###   ########.fr       */
+/*   Updated: 2018/01/23 19:34:40 by vlevko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -404,11 +404,11 @@ void	cast_pc_w(int *count, wint_t c, t_plist *spec)
 	ws[1] = 0;
 	ws[1] = count_bytes_w(c);
 	ws[0] = spec->wp[0];
-	if (ws[1] != 1 && MB_CUR_MAX < ws[1])
-	{
-		*count = -1;
-		return ;
-	}
+	// if (ws[1] != 1 && MB_CUR_MAX < ws[1])
+	// {
+	// 	*count = -1;
+	// 	return ;
+	// }
 	if (c == 0)
 	{
 		while ((ws[0])-- > 1)
