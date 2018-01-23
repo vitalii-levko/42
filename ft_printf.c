@@ -6,7 +6,7 @@
 /*   By: vlevko <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/30 22:18:36 by vlevko            #+#    #+#             */
-/*   Updated: 2018/01/23 14:18:36 by vlevko           ###   ########.fr       */
+/*   Updated: 2018/01/23 17:47:27 by vlevko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,33 +164,33 @@ void	hldi_left(int *count, int cwpm[4], long long int val, t_plist *spec)
 		pc_di(count, ' ', &(cwpm[1]));
 }
 
-void	hldi_r_prec(int *count, int *wid, long long int val, t_plist *spec)
+void	hldi_r_prec(int *count, int *wid, long long int *val, t_plist *spec)
 {
 	while (*wid > 0)
 		pc_di(count, ' ', wid);
-	if (spec->fg[4] && val >= 0)
+	if (spec->fg[4] && *val >= 0)
 		pc_di(count, '+', 0);
-	else if (spec->fg[3] && val >= 0)
+	else if (spec->fg[3] && *val >= 0)
 		pc_di(count, ' ', 0);
-	if (val < 0)
+	if (*val < 0)
 	{
 		pc_di(count, '-', 0);
-		val = -val;
+		*val *= -1;
 	}
 }
 
-void	hldi_r_noprec(int *count, int *wid, long long int val, t_plist *spec)
+void	hldi_r_noprec(int *count, int *wid, long long int *val, t_plist *spec)
 {
 	if (spec->fg[1])
 	{
-		if (spec->fg[4] && val >= 0)
+		if (spec->fg[4] && *val >= 0)
 			pc_di(count, '+', 0);
-		else if (spec->fg[3] && val >= 0)
+		else if (spec->fg[3] && *val >= 0)
 			pc_di(count, ' ', 0);
-		if (val < 0)
+		if (*val < 0)
 		{
 			pc_di(count, '-', 0);
-			val = -val;
+			*val *= -1;
 		}
 		while (*wid > 0)
 			pc_di(count, '0', wid);
@@ -198,12 +198,12 @@ void	hldi_r_noprec(int *count, int *wid, long long int val, t_plist *spec)
 	}
 	while (*wid > 0)
 		pc_di(count, ' ', wid);
-	(spec->fg[4] && val >= 0) ? (pc_di(count, '+', 0)) : \
-	((spec->fg[3] && val >= 0) ? (pc_di(count, ' ', 0)) : ((*wid) = 0));
-	if (val < 0)
+	(spec->fg[4] && *val >= 0) ? (pc_di(count, '+', 0)) : \
+	((spec->fg[3] && *val >= 0) ? (pc_di(count, ' ', 0)) : ((*wid) = 0));
+	if (*val < 0)
 	{
 		pc_di(count, '-', 0);
-		val = -val;
+		*val *= -1;
 	}
 }
 
@@ -220,9 +220,9 @@ void	hldi_right(int *count, int cwpm[4], long long int val, t_plist *spec)
 	else if (spec->fg[3])
 		cwpm[1] -= 1;
 	if (spec->wp[2])
-		hldi_r_prec(count, &(cwpm[1]), val, spec);
+		hldi_r_prec(count, &(cwpm[1]), &val, spec);
 	else
-		hldi_r_noprec(count, &(cwpm[1]), val, spec);
+		hldi_r_noprec(count, &(cwpm[1]), &val, spec);
 	while (cwpm[2] > cwpm[0])
 		pc_di(count, '0', &(cwpm[2]));
 	ft_putnbr_ll(cwpm[3], val);
@@ -266,7 +266,7 @@ void	cast_pc(int *count, char c, t_plist *spec)
 	if (c == 0)
 	{
 		while (wid-- > 1)
-			(spec->fg[1]) ? (pc_di(count, '0', 0)) : (pc_di(count, ' ', 0));
+			pc_di(count, ((spec->fg[1] && !spec->fg[2]) ? '0' : ' '), 0);
 		pc_di(count, '\0', 0);
 		return ;
 	}
