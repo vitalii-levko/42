@@ -6,12 +6,24 @@
 /*   By: vlevko <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/30 22:18:36 by vlevko            #+#    #+#             */
-/*   Updated: 2018/01/23 19:46:57 by vlevko           ###   ########.fr       */
+/*   Updated: 2018/01/27 20:56:11 by vlevko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include "includes/libft.h"
+
+int ft_chrseek(const char *s, char c, int i)
+{
+	if (i == 7 && *s == ' ' && c != '\0')
+		return (1);
+	while (*s)
+	{
+		if (*s == c)
+			return (1);
+		s++;
+	}
+	return (0);
+}
 
 unsigned long long int	ft_pow_lu(int nbr, int pow)
 {
@@ -117,9 +129,9 @@ void	ft_putnbr_ll(int minval, long long int nbr)
 	ft_putchar(nbr + '0');
 }
 
-void	hldi_zero(int *count, int wid, t_plist *spec)
+void	ssmhldi_zero(int *count, int wid, t_plist *spec)
 {
-	while (wid-- > 0)
+	while (wid > 0)
 	{
 		if (spec->fg[4] && wid == 1)
 			ft_putchar('+');
@@ -155,7 +167,7 @@ void	hldi_left(int *count, int cwpm[4], long long int val, t_plist *spec)
 		pc_di(count, '-', &(cwpm[1]));
 		val = -val;
 	}
-	while (cwpm[2]-- > cwpm[0])
+	while ((cwpm[2])-- > cwpm[0])
 		pc_di(count, '0', &(cwpm[1]));
 	ft_putnbr_ll(cwpm[3], val);
 	*count += cwpm[0];
@@ -164,10 +176,10 @@ void	hldi_left(int *count, int cwpm[4], long long int val, t_plist *spec)
 		pc_di(count, ' ', &(cwpm[1]));
 }
 
-void	hldi_r_prec(int *count, int *wid, long long int *val, t_plist *spec)
+void	hldi_r_prec(int *count, int wid, long long int *val, t_plist *spec)
 {
-	while (*wid > 0)
-		pc_di(count, ' ', wid);
+	while (wid > 0)
+		pc_di(count, ' ', &wid);
 	if (spec->fg[4] && *val >= 0)
 		pc_di(count, '+', 0);
 	else if (spec->fg[3] && *val >= 0)
@@ -179,7 +191,7 @@ void	hldi_r_prec(int *count, int *wid, long long int *val, t_plist *spec)
 	}
 }
 
-void	hldi_r_noprec(int *count, int *wid, long long int *val, t_plist *spec)
+void	hldi_r_noprec(int *count, int wid, long long int *val, t_plist *spec)
 {
 	if (spec->fg[1])
 	{
@@ -192,14 +204,14 @@ void	hldi_r_noprec(int *count, int *wid, long long int *val, t_plist *spec)
 			pc_di(count, '-', 0);
 			*val *= -1;
 		}
-		while (*wid > 0)
-			pc_di(count, '0', wid);
+		while (wid > 0)
+			pc_di(count, '0', &wid);
 		return ;
 	}
-	while (*wid > 0)
-		pc_di(count, ' ', wid);
+	while (wid > 0)
+		pc_di(count, ' ', &wid);
 	(spec->fg[4] && *val >= 0) ? (pc_di(count, '+', 0)) : \
-	((spec->fg[3] && *val >= 0) ? (pc_di(count, ' ', 0)) : ((*wid) = 0));
+	((spec->fg[3] && *val >= 0) ? (pc_di(count, ' ', 0)) : (wid = 0));
 	if (*val < 0)
 	{
 		pc_di(count, '-', 0);
@@ -220,9 +232,9 @@ void	hldi_right(int *count, int cwpm[4], long long int val, t_plist *spec)
 	else if (spec->fg[3])
 		cwpm[1] -= 1;
 	if (spec->wp[2])
-		hldi_r_prec(count, &(cwpm[1]), &val, spec);
+		hldi_r_prec(count, cwpm[1], &val, spec);
 	else
-		hldi_r_noprec(count, &(cwpm[1]), &val, spec);
+		hldi_r_noprec(count, cwpm[1], &val, spec);
 	while (cwpm[2] > cwpm[0])
 		pc_di(count, '0', &(cwpm[2]));
 	ft_putnbr_ll(cwpm[3], val);
@@ -241,7 +253,7 @@ void	cast_hldi(int *count, long long int val, t_plist *spec)
 	cwpm[1] = spec->wp[0];
 	cwpm[2] = spec->wp[1];
 	if (val == 0 && cwpm[2] == 0)
-		return (hldi_zero(count, cwpm[1], spec));
+		return (ssmhldi_zero(count, cwpm[1], spec));
 	cwpm[3] = 0;
 	while (nbr /= 10)
 		(cwpm[0])++;
@@ -406,10 +418,6 @@ void	cast_pc_w(int *count, wint_t c, t_plist *spec)
 	ws[0] = spec->wp[0];
 	if (ws[1] != 1 && MB_CUR_MAX < ws[1])
 		ws[1] = 1;
-	// {
-	// 	*count = -1;
-	// 	return ;
-	// }
 	if (c == 0)
 	{
 		while ((ws[0])-- > 1)
@@ -727,206 +735,86 @@ int	print_c(int *count, char c)
 		(*count)++;
 		return (1);
 	}
-	return (0);
+	return (-1);
 }
 
-void	parse_ctrl(t_plist *spec, const char **f)
+void	s_left(int *count, char *rt[2], int cwp[3], t_plist *spec)
 {
-	int		i;
-	char	*str;
+	if (spec->wp[2])
+	{
+		rt[0] = ft_strsub(rt[1], 0, cwp[2]);
+		cwp[1] -= ft_strlen(rt[0]);
+		*count += ft_strlen(rt[0]);
+	}
+	else
+	{
+		cwp[1] -= cwp[0];
+		rt[0] = ft_strdup(rt[1]);
+		*count += cwp[0];
+	}
+	ft_putstr(rt[0]);
+	ft_strdel(&(rt[0]));
+	while (cwp[1] > 0)
+		pc_di(count, ' ', &(cwp[1]));
+}
 
-	i = -1;
-	while (++i < 5)
+void	s_right(int *count, char *rt[2], int cwp[3], t_plist *spec)
+{
+	if (spec->wp[2])
 	{
-		spec->fg[i] = 0;
-		if (i < 2)
-		{
-			spec->wp[i] = 0;
-			spec->hh[i] = 0;
-			spec->ll[i] = 0;
-			spec->jz[i] = 0;
-		}
-		if (i == 2)
-			spec->wp[i] = 0;
+		rt[0] = ft_strsub(rt[1], 0, cwp[2]);
+		cwp[1] -= ft_strlen(rt[0]);
+		*count += ft_strlen(rt[0]);
 	}
-	while (**f == '#' || **f == '0' || **f == '-' || **f == ' ' || **f == '+' \
-		|| **f == 'l' || **f == 'h' || **f == 'j' || **f == 'z' || **f == 'L' \
-		|| **f == 't' || **f == '.' || (**f >= '0' && **f <= '9'))
+	else
 	{
-		if (**f == '#')
-		{
-			spec->fg[0] = 1;
-			(*f)++;
-		}
-		if (**f == '0')
-		{
-			spec->fg[1] = 1;
-			(*f)++;
-		}
-		if (**f == '-')
-		{
-			spec->fg[2] = 1;
-			(*f)++;
-		}
-		if (**f == ' ')
-		{
-			spec->fg[3] = 1;
-			(*f)++;
-		}
-		if (**f == '+')
-		{
-			spec->fg[4] = 1;
-			(*f)++;
-		}
-		if (**f >= '1' && **f <= '9')
-		{
-			i = 0;
-			str = NULL;
-			while (ft_isdigit((*f)[i]))
-				i++;
-			str = ft_strsub(*f, 0, i);
-			spec->wp[0] = ft_atoi(str);
-			ft_strdel(&str);
-			while (i-- > 0)
-				(*f)++;
-		}
-		if (**f == '.')
-		{
-			(*f)++;
-			i = 0;
-			str = NULL;
-			if (**f == '-')
-				(*f)++;
-			while (ft_isdigit((*f)[i]))
-				i++;
-			str = ft_strsub(*f, 0, i);
-			spec->wp[2] = 1;
-			spec->wp[1] = ft_atoi(str);
-			ft_strdel(&str);
-			while (i-- > 0)
-				(*f)++;
-		}
-		if (**f == 'h')
-		{
-			(*f)++;
-			if (**f == 'h')
-			{
-				(*f)++;
-				spec->hh[1] = 1;
-			}
-			else
-				spec->hh[0] = 1;
-		}
-		if (**f == 'l')
-		{
-			(*f)++;
-			if (**f == 'l')
-			{
-				(*f)++;
-				spec->ll[1] = 1;
-			}
-			else
-				spec->ll[0] = 1;
-		}
-		if (**f == 'L')
-			(*f)++;
-		if (**f == 'j')
-		{
-			spec->jz[0] = 1;
-			(*f)++;
-		}
-		if (**f == 'z')
-		{
-			spec->jz[1] = 1;
-			(*f)++;
-		}
-		if (**f == 't')
-			(*f)++;
+		cwp[1] -= cwp[0];
+		rt[0] = ft_strdup(rt[1]);
+		*count += cwp[0];
 	}
+	while (cwp[1] > 0)
+		pc_di(count, (spec->fg[1] ? '0' : ' '), &(cwp[1]));
+	ft_putstr(rt[0]);
+	ft_strdel(&(rt[0]));
 }
 
 void	cast_s(int *count, char *str, t_plist *spec)
 {
-	char	*res;
-	char	*tmp;
-	int		len;
-	int		wid;
-	int		prec;
+	char	*rt[2];
+	int		cwp[3];
 
-	res = NULL;
-	tmp = NULL;
-	wid = spec->wp[0];
-	prec = spec->wp[1];
+	rt[0] = NULL;
+	rt[1] = NULL;
+	cwp[1] = spec->wp[0];
+	cwp[2] = spec->wp[1];
 	if (str == NULL)
-		tmp = ft_strdup("(null)");
+		rt[1] = ft_strdup("(null)");
 	else
-		tmp = ft_strdup(str);
-	len = 0;
-	len = ft_strlen(tmp);
+		rt[1] = ft_strdup(str);
+	cwp[0] = 0;
+	cwp[0] = ft_strlen(rt[1]);
 	if (spec->fg[2])
-	{
-		if (spec->wp[2])
-		{
-			res = ft_strsub(tmp, 0, prec);
-			wid -= ft_strlen(res);
-			*count += ft_strlen(res);
-		}
-		else
-		{
-			wid -= len;
-			res = ft_strdup(tmp);
-			*count += len;
-		}
-		ft_putstr(res);
-		ft_strdel(&res);
-		while (wid > 0)
-		{
-			ft_putchar(' ');
-			wid--;
-			(*count)++;
-		}
-	}
+		s_left(count, rt, cwp, spec);
 	else
-	{
-		if (spec->wp[2])
-		{
-			res = ft_strsub(tmp, 0, prec);
-			wid -= ft_strlen(res);
-			*count += ft_strlen(res);
-		}
-		else
-		{
-			wid -= len;
-			res = ft_strdup(tmp);
-			*count += len;
-		}
-		while (wid > 0)
-		{
-			ft_putchar((spec->fg[1] ? '0' : ' '));
-			wid--;
-			(*count)++;
-		}
-		ft_putstr(res);
-		ft_strdel(&res);
-	}
-	ft_strdel(&tmp);
+		s_right(count, rt, cwp, spec);
+	ft_strdel(&(rt[1]));
 }
 
-size_t	ft_countlen_w(int prec, const wchar_t *s)
+size_t	ft_cntlen_w(int prec, const wchar_t *res)
 {
-	size_t			len;
-	unsigned int	bytes;
+	size_t			cnt;
+	unsigned int	size;
 
-	len = 0;
-	while (*s != '\0')
+	cnt = 0;
+	while (*res != '\0')
 	{
-		bytes = count_bytes_w(*s);
-		if (prec != -1 && bytes + len > (unsigned int)(prec))
+		size = count_bytes_w(*res);
+		if (prec != -1 && size + cnt > (unsigned int)(prec))
 			break ;
-		len += bytes;
-		s++;
+		cnt += size;
+		res++;
 	}
-	return (len);
+	return (cnt);
 }
 
 void	ft_putstr_w(int len, wchar_t const *s)
@@ -999,578 +887,676 @@ wchar_t	*ft_strdup_w(const wchar_t *s1)
 	return (s2);
 }
 
+void	ws_left(int *count, int cwp[3], wchar_t *res)
+{
+	if (cwp[2] == 0)
+	{
+		while (cwp[1] > 0)
+			pc_di(count, ' ', &(cwp[1]));
+		return ;
+	}
+	cwp[1] -= cwp[0];
+	*count += cwp[0];		
+	ft_putstr_w(cwp[0], res);
+	while (cwp[1] > 0)
+		pc_di(count, ' ', &(cwp[1]));
+}
+
+void	ws_right(int *count, int cwp[3], wchar_t *res, t_plist *spec)
+{
+	if (cwp[2] == 0)
+	{
+		while (cwp[1] > 0)
+			pc_di(count, (spec->fg[1] ? '0' : ' '), &(cwp[1]));
+		return ;
+	}
+	cwp[1] -= cwp[0];
+	*count += cwp[0];			
+	while (cwp[1] > 0)
+		pc_di(count, (spec->fg[1] ? '0' : ' '), &(cwp[1]));
+	ft_putstr_w(cwp[0], res);
+}
+
 void	cast_ws(int *count, wchar_t *str, t_plist *spec)
 {
-	int		len;
-	int		wid;
-	int		prec;
+	int		cwp[3];
 	wchar_t	*res;
 
+	res = NULL;
+	cwp[1] = spec->wp[0];
 	if (str == NULL)
 		res = ft_strdup_w(L"(null)");
 	else
 		res = ft_strdup_w(str);
-	len = 0;
-	wid = spec->wp[0];
+	cwp[0] = 0;
 	if (spec->wp[2])
-		prec = spec->wp[1];
+		cwp[2] = spec->wp[1];
 	else
-		prec = -1;
-	len = ft_countlen_w(prec, res);
+		cwp[2] = -1;
+	cwp[0] = ft_cntlen_w(cwp[2], res);
 	if (spec->fg[2])
-	{
-		if (prec == 0)
-		{
-			while (wid > 0)
-			{
-				ft_putchar(' ');
-				wid--;
-				(*count)++;
-			}
-			ft_strdel_w(&res);
-			return ;
-		}
-		wid -= len;
-		*count += len;;		
-		ft_putstr_w(len, res);
-		while (wid > 0)
-		{
-			ft_putchar(' ');
-			wid--;
-			(*count)++;
-		}
-	}
+		ws_left(count, cwp, res);
 	else
-	{
-		if (prec == 0)
-		{
-			while (wid > 0)
-			{
-				ft_putchar((spec->fg[1] ? '0' : ' '));
-				wid--;
-				(*count)++;
-			}
-			ft_strdel_w(&res);
-			return ;
-		}
-		wid -= len;
-		*count += len;			
-		while (wid > 0)
-		{
-			ft_putchar((spec->fg[1] ? '0' : ' '));
-			wid--;
-			(*count)++;
-		}
-		ft_putstr_w(len, res);
-	}
+		ws_right(count, cwp, res, spec);
 	ft_strdel_w(&res);
 }
 
-void	ft_putnbr_m(int minval, intmax_t n)
+void	ft_putnbr_m(int minval, intmax_t nbr)
 {
 	intmax_t	tmp;
-	intmax_t	count;
+	intmax_t	cnt;
 
-	count = 1;
-	tmp = n;
-	while (n /= 10)
-		count *= 10;
-	while (count / 10)
+	cnt = 1;
+	tmp = nbr;
+	while (tmp /= 10)
+		cnt *= 10;
+	while (cnt / 10)
 	{
-		ft_putchar((tmp / count) + '0');
-		tmp %= count;
-		count /= 10;
+		ft_putchar(nbr / cnt + '0');
+		nbr %= cnt;
+		cnt /= 10;
 	}
 	if (minval)
-		tmp++;
-	ft_putchar(tmp + '0');
+		nbr++;
+	ft_putchar(nbr + '0');
+}
+
+void	mdi_left(int *count, int cwpm[4], intmax_t val, t_plist *spec)
+{
+	if (spec->fg[4] && val >= 0)
+		pc_di(count, '+', &(cwpm[1]));
+	else if (spec->fg[3] && val >= 0)
+		pc_di(count, ' ', &(cwpm[1]));
+	if (val < 0)
+	{
+		pc_di(count, '-', &(cwpm[1]));
+		val = -val;
+	}
+	while (cwpm[2]-- > cwpm[0])
+		pc_di(count, '0', &(cwpm[1]));
+	ft_putnbr_m(cwpm[3], val);
+	*count += cwpm[0];
+	while (cwpm[1] > 0)
+		pc_di(count, ' ', &(cwpm[1]));
+}
+
+void	mdi_r_prec(int *count, int wid, intmax_t *val, t_plist *spec)
+{
+	while (wid > 0)
+		pc_di(count, ' ', &wid);
+	if (spec->fg[4] && *val >= 0)
+		pc_di(count, '+', 0);
+	else if (spec->fg[3] && *val >= 0)
+		pc_di(count, ' ', 0);
+	if (*val < 0)
+	{
+		pc_di(count, '-', 0);
+		*val *= -1;
+	}
+}
+
+void	mdi_r_noprec(int *count, int wid, intmax_t *val, t_plist *spec)
+{
+	if (spec->fg[1])
+	{
+		if (spec->fg[4] && *val >= 0)
+			pc_di(count, '+', 0);
+		else if (spec->fg[3] && *val >= 0)
+			pc_di(count, ' ', 0);
+		if (*val < 0)
+		{
+			pc_di(count, '-', 0);
+			*val *= -1;
+		}
+		while (wid > 0)
+			pc_di(count, '0', &wid);
+		return ;
+	}
+	while (wid > 0)
+		pc_di(count, ' ', &wid);
+	(spec->fg[4] && *val >= 0) ? (pc_di(count, '+', 0)) : \
+	((spec->fg[3] && *val >= 0) ? (pc_di(count, ' ', 0)) : (wid = 0));
+	if (*val < 0)
+	{
+		pc_di(count, '-', 0);
+		*val *= -1;
+	}
+}
+
+void	mdi_right(int *count, int cwpm[4], intmax_t val, t_plist *spec)
+{
+	if (cwpm[2] > cwpm[0])
+		cwpm[1] -= cwpm[2];
+	else
+		cwpm[1] -= cwpm[0];
+	if (val < 0)
+		cwpm[1] -= 1;
+	else if (spec->fg[4])
+		cwpm[1] -= 1;
+	else if (spec->fg[3])
+		cwpm[1] -= 1;
+	if (spec->wp[2])
+		mdi_r_prec(count, cwpm[1], &val, spec);
+	else
+		mdi_r_noprec(count, cwpm[1], &val, spec);
+	while (cwpm[2] > cwpm[0])
+		pc_di(count, '0', &(cwpm[2]));
+	ft_putnbr_m(cwpm[3], val);
+	*count += cwpm[0];
 }
 
 void	cast_mdi(int *count, intmax_t val, t_plist *spec)
 {
-	intmax_t	nb;
-	int	cnt;
-	int	wid;
-	int	prec;
-	int	minval;
+	intmax_t	nbr;
+	int			cwpm[4];
 
-	nb = val;
-	cnt = 1;
+	nbr = val;
+	cwpm[0] = 1;
 	if (spec->wp[2] == 0)
 		spec->wp[1] = 1;
-	wid = spec->wp[0];
-	prec = spec->wp[1];
-	minval = 0;
-	if (val == 0 && prec == 0)
-	{
-		while (wid > 0)
-		{
-			if (spec->fg[4] && wid == 1)
-				ft_putchar('+');
-			else
-				ft_putchar(' ');
-			wid--;
-			(*count)++;
-		}
-		return ;
-	}	
-	while (nb /= 10)
-		cnt++;
+	cwpm[1] = spec->wp[0];
+	cwpm[2] = spec->wp[1];
+	if (val == 0 && cwpm[2] == 0)
+		return (ssmhldi_zero(count, cwpm[1], spec));
+	cwpm[3] = 0;
+	while (nbr /= 10)
+		(cwpm[0])++;
 	if (val == INTMAX_MIN)
 	{
-		minval = 1;
+		cwpm[3] = 1;
 		val++;
 	}
 	if (spec->fg[2])
-	{
-		if (spec->fg[4] && val >= 0)
-		{
-			ft_putchar('+');
-			wid--;
-			(*count)++;
-		}
-		else if (spec->fg[3] && val >= 0)
-		{
-			ft_putchar(' ');
-			wid--;
-			(*count)++;
-		}
-		if (val < 0)
-		{
-			ft_putchar('-');
-			val = -val;
-			wid--;
-			(*count)++;
-		}
-		while (prec > cnt)
-		{
-			ft_putchar('0');
-			wid--;
-			(*count)++;
-			prec--;
-		}
-		ft_putnbr_m(minval, val);
-		*count += cnt;
-		while (wid > 0)
-		{
-			ft_putchar(' ');
-			wid--;
-			(*count)++;
-		}
-	}
+		mdi_left(count, cwpm, val, spec);
 	else
+		mdi_right(count, cwpm, val, spec);
+}
+
+void	ft_putnbr_ss(int minval, ssize_t nbr)
+{
+	ssize_t	tmp;
+	ssize_t	cnt;
+
+	cnt = 1;
+	tmp = nbr;
+	while (tmp /= 10)
+		cnt *= 10;
+	while (cnt / 10)
 	{
-		if (prec > cnt)
-			wid -= prec;
-		else
-			wid -= cnt;
-		if (val < 0)
-			wid -= 1;
-		else if (spec->fg[4])
-			wid -= 1;
-		else if (spec->fg[3])
-			wid -= 1;
-		if (spec->wp[2])
-		{
-			while (wid > 0)
-			{
-				ft_putchar(' ');
-				wid--;
-				(*count)++;
-			}
-			if (spec->fg[4] && val >= 0)
-			{
-				ft_putchar('+');
-				(*count)++;
-			}
-			else if (spec->fg[3] && val >= 0)
-			{
-				ft_putchar(' ');
-				(*count)++;
-			}
-			if (val < 0)
-			{
-				ft_putchar('-');
-				val = -val;
-				(*count)++;
-			}
-		}
-		else
-		{
-			if (spec->fg[1])
-			{
-				if (spec->fg[4] && val >= 0)
-				{
-					ft_putchar('+');
-					(*count)++;
-				}
-				else if (spec->fg[3] && val >= 0)
-				{
-					ft_putchar(' ');
-					(*count)++;
-				}
-				if (val < 0)
-				{
-					ft_putchar('-');
-					val = -val;
-					(*count)++;
-				}
-				while (wid > 0)
-				{
-					ft_putchar('0');
-					wid--;
-					(*count)++;
-				}
-			}
-			else
-			{
-				while (wid > 0)
-				{
-					ft_putchar(' ');
-					wid--;
-					(*count)++;
-				}
-				if (spec->fg[4] && val >= 0)
-				{
-					ft_putchar('+');
-					(*count)++;
-				}
-				else if (spec->fg[3] && val >= 0)
-				{
-					ft_putchar(' ');
-					(*count)++;
-				}
-				if (val < 0)
-				{
-					ft_putchar('-');
-					val = -val;
-					(*count)++;
-				}
-			}
-		}
-		while (prec > cnt)
-		{
-			ft_putchar('0');
-			prec--;
-			(*count)++;
-		}
-		ft_putnbr_m(minval, val);
-		*count += cnt;
+		ft_putchar(nbr / cnt + '0');
+		nbr %= cnt;
+		cnt /= 10;
+	}
+	if (minval)
+		nbr++;
+	ft_putchar(nbr + '0');
+}
+
+void	ssdi_left(int *count, int cwpm[4], ssize_t val, t_plist *spec)
+{
+	if (spec->fg[4] && val >= 0)
+		pc_di(count, '+', &(cwpm[1]));
+	else if (spec->fg[3] && val >= 0)
+		pc_di(count, ' ', &(cwpm[1]));
+	if (val < 0)
+	{
+		pc_di(count, '-', &(cwpm[1]));
+		val = -val;
+	}
+	while (cwpm[2]-- > cwpm[0])
+		pc_di(count, '0', &(cwpm[1]));
+	ft_putnbr_ss(cwpm[3], val);
+	*count += cwpm[0];
+	while (cwpm[1] > 0)
+		pc_di(count, ' ', &(cwpm[1]));
+}
+
+void	ssdi_r_prec(int *count, int wid, ssize_t *val, t_plist *spec)
+{
+	while (wid > 0)
+		pc_di(count, ' ', &wid);
+	if (spec->fg[4] && *val >= 0)
+		pc_di(count, '+', 0);
+	else if (spec->fg[3] && *val >= 0)
+		pc_di(count, ' ', 0);
+	if (*val < 0)
+	{
+		pc_di(count, '-', 0);
+		*val *= -1;
 	}
 }
 
-void	ft_putnbr_ss(int minval, ssize_t n)
+void	ssdi_r_noprec(int *count, int wid, ssize_t *val, t_plist *spec)
 {
-	ssize_t	tmp;
-	ssize_t	count;
-
-	count = 1;
-	tmp = n;
-	while (n /= 10)
-		count *= 10;
-	while (count / 10)
+	if (spec->fg[1])
 	{
-		ft_putchar((tmp / count) + '0');
-		tmp %= count;
-		count /= 10;
+		if (spec->fg[4] && *val >= 0)
+			pc_di(count, '+', 0);
+		else if (spec->fg[3] && *val >= 0)
+			pc_di(count, ' ', 0);
+		if (*val < 0)
+		{
+			pc_di(count, '-', 0);
+			*val *= -1;
+		}
+		while (wid > 0)
+			pc_di(count, '0', &wid);
+		return ;
 	}
-	if (minval)
-		tmp++;
-	ft_putchar(tmp + '0');
+	while (wid > 0)
+		pc_di(count, ' ', &wid);
+	(spec->fg[4] && *val >= 0) ? (pc_di(count, '+', 0)) : \
+	((spec->fg[3] && *val >= 0) ? (pc_di(count, ' ', 0)) : (wid = 0));
+	if (*val < 0)
+	{
+		pc_di(count, '-', 0);
+		*val *= -1;
+	}
+}
+
+void	ssdi_right(int *count, int cwpm[4], ssize_t val, t_plist *spec)
+{
+	if (cwpm[2] > cwpm[0])
+		cwpm[1] -= cwpm[2];
+	else
+		cwpm[1] -= cwpm[0];
+	if (val < 0)
+		cwpm[1] -= 1;
+	else if (spec->fg[4])
+		cwpm[1] -= 1;
+	else if (spec->fg[3])
+		cwpm[1] -= 1;
+	if (spec->wp[2])
+		ssdi_r_prec(count, cwpm[1], &val, spec);
+	else
+		ssdi_r_noprec(count, cwpm[1], &val, spec);
+	while (cwpm[2] > cwpm[0])
+		pc_di(count, '0', &(cwpm[2]));
+	ft_putnbr_ss(cwpm[3], val);
+	*count += cwpm[0];
 }
 
 void	cast_ssdi(int *count, ssize_t val, t_plist *spec)
 {
-	ssize_t	nb;
-	int	cnt;
-	int	wid;
-	int	prec;
-	int	minval;
+	ssize_t	nbr;
+	int		cwpm[4];
 
-	nb = val;
-	cnt = 1;
+	nbr = val;
+	cwpm[0] = 1;
 	if (spec->wp[2] == 0)
 		spec->wp[1] = 1;
-	wid = spec->wp[0];
-	prec = spec->wp[1];
-	minval = 0;
-	if (val == 0 && prec == 0)
-	{
-		while (wid > 0)
-		{
-			if (spec->fg[4] && wid == 1)
-				ft_putchar('+');
-			else
-				ft_putchar(' ');
-			wid--;
-			(*count)++;
-		}
-		return ;
-	}
-	while (nb /= 10)
-		cnt++;
+	cwpm[1] = spec->wp[0];
+	cwpm[2] = spec->wp[1];
+	if (val == 0 && cwpm[2] == 0)
+		return (ssmhldi_zero(count, cwpm[1], spec));
+	cwpm[3] = 0;
+	while (nbr /= 10)
+		(cwpm[0])++;
 	if (val == -SSIZE_MAX - 1)
 	{
-		minval = 1;
+		cwpm[3] = 1;
 		val++;
 	}
 	if (spec->fg[2])
-	{
-		if (spec->fg[4] && val >= 0)
-		{
-			ft_putchar('+');
-			wid--;
-			(*count)++;
-		}
-		else if (spec->fg[3] && val >= 0)
-		{
-			ft_putchar(' ');
-			wid--;
-			(*count)++;
-		}
-		if (val < 0)
-		{
-			ft_putchar('-');
-			val = -val;
-			wid--;
-			(*count)++;
-		}
-		while (prec > cnt)
-		{
-			ft_putchar('0');
-			wid--;
-			(*count)++;
-			prec--;
-		}
-		ft_putnbr_ss(minval, val);
-		*count += cnt;
-		while (wid > 0)
-		{
-			ft_putchar(' ');
-			wid--;
-			(*count)++;
-		}
-	}
+		ssdi_left(count, cwpm, val, spec);
 	else
+		ssdi_right(count, cwpm, val, spec);
+}
+
+void	route_di(int *count, char f, va_list *ap, t_plist *spec)
+{
+	if (spec->jz[1] == 1 && f != 'D')
+		cast_ssdi(count, (ssize_t)(va_arg(*ap, ssize_t)), spec);
+	else if (spec->jz[0] == 1 && f != 'D')
+		cast_mdi(count, (intmax_t)(va_arg(*ap, intmax_t)), spec);
+	else if (spec->ll[1] && f != 'D')
+		cast_hldi(count, (long long int)(va_arg(*ap, long long int)), spec);
+	else if (spec->ll[0])
+		cast_hldi(count, (long int)(va_arg(*ap, long int)), spec);
+	else if (spec->hh[1] && f != 'D')
+		cast_hldi(count, (signed char)(va_arg(*ap, int)), spec);
+	else if (spec->hh[0] && f != 'D')
+		cast_hldi(count, (short int)(va_arg(*ap, int)), spec);
+	else if (f != 'D')
+		cast_hldi(count, (int)(va_arg(*ap, int)), spec);
+}
+
+void	route_cC(int *count, char f, va_list *ap, t_plist *spec)
+{
+	if (f == 'c' || f == 'C')
 	{
-		if (prec > cnt)
-			wid -= prec;
+		if (spec->ll[0])
+			cast_pc_w(count, (wint_t)(va_arg(*ap, wint_t)), spec);
 		else
-			wid -= cnt;
-		if (val < 0)
-			wid -= 1;
-		else if (spec->fg[4])
-			wid -= 1;
-		else if (spec->fg[3])
-			wid -= 1;
-		if (spec->wp[2])
-		{
-			while (wid > 0)
-			{
-				ft_putchar(' ');
-				wid--;
-				(*count)++;
-			}
-			if (spec->fg[4] && val >= 0)
-			{
-				ft_putchar('+');
-				(*count)++;
-			}
-			else if (spec->fg[3] && val >= 0)
-			{
-				ft_putchar(' ');
-				(*count)++;
-			}
-			if (val < 0)
-			{
-				ft_putchar('-');
-				val = -val;
-				(*count)++;
-			}
-		}
+			cast_pc(count, (unsigned char)(va_arg(*ap, int)), spec);
+	}
+	else if (f == '%')
+		cast_pc(count, f, spec);
+}
+
+void	route_e(int *count, char f, va_list *ap, t_plist *spec)
+{
+	if (f != '\0')
+		cast_pc(count, f, spec);
+	else if (*ap)
+		return ;
+
+}
+
+void	route_uU(int *count, char f, va_list *ap, t_plist *spec)
+{
+	if (spec->jz[1] && f != 'U')
+		cast_su(count, (size_t)(va_arg(*ap, size_t)), spec);
+	else if (spec->jz[0] && f != 'U')
+		cast_mu(count, (uintmax_t)(va_arg(*ap, uintmax_t)), spec);
+	else if (spec->ll[1] && f != 'U')
+		cast_lu(count, (unsigned long long int)(va_arg(*ap, \
+			unsigned long long int)), spec);
+	else if (spec->ll[0])
+		cast_lu(count, (unsigned long int)(va_arg(*ap, unsigned long int)), \
+			spec);
+	else if (spec->hh[1] && f != 'U')
+		cast_lu(count, (unsigned char)(va_arg(*ap, unsigned int)), spec);
+	else if (spec->hh[0] && f != 'U')
+		cast_lu(count, (unsigned short int)(va_arg(*ap, unsigned int)), spec);
+	else if (f != 'U')
+		cast_lu(count, (unsigned int)(va_arg(*ap, unsigned int)), spec);
+}
+
+void	route_xX(int *count, char f, va_list *ap, t_plist *spec)
+{
+	if (spec->jz[1])
+		cast_xX(count, (f == 'x' ? 'a' : 'A'), ft_itoa_base_su((f == 'x' ? 'a' \
+			: 'A'), (size_t)(va_arg(*ap, size_t)), 16), spec);
+	else if (spec->jz[0])
+		cast_xX(count, (f == 'x' ? 'a' : 'A'), ft_itoa_base_mu((f == 'x' ? 'a' \
+			: 'A'), (uintmax_t)(va_arg(*ap, uintmax_t)), 16), spec);
+	else if (spec->ll[1])
+		cast_xX(count, (f == 'x' ? 'a' : 'A'), ft_itoa_base_lu((f == 'x' ? 'a' \
+			: 'A'), (unsigned long long int)(va_arg(*ap, \
+				unsigned long long int)), 16), spec);
+	else if (spec->ll[0])
+		cast_xX(count, (f == 'x' ? 'a' : 'A'), ft_itoa_base_lu((f == 'x' ? 'a' \
+			: 'A'), (unsigned long int)(va_arg(*ap, unsigned long int)), 16), \
+	spec);
+	else if (spec->hh[1])
+		cast_xX(count, (f == 'x' ? 'a' : 'A'), ft_itoa_base_lu((f == 'x' ? 'a' \
+			: 'A'), (unsigned char)(va_arg(*ap, unsigned int)), 16), spec);
+	else if (spec->hh[0])
+		cast_xX(count, (f == 'x' ? 'a' : 'A'), ft_itoa_base_lu((f == 'x' ? 'a' \
+			: 'A'), (unsigned short int)(va_arg(*ap, unsigned int)), 16), spec);
+	else
+		cast_xX(count, (f == 'x' ? 'a' : 'A'), ft_itoa_base_lu((f == 'x' ? 'a' \
+			: 'A'), (unsigned int)(va_arg(*ap, unsigned int)), 16), spec);
+}
+
+void	route_oO(int *count, char f, va_list *ap, t_plist *spec)
+{
+	if (spec->jz[1] && f != 'O')
+		cast_o(count, ft_itoa_base_su('o', (size_t)(va_arg(*ap, size_t)), 8), \
+			spec);
+	else if (spec->jz[0] && f != 'O')
+		cast_o(count, ft_itoa_base_mu('o', (uintmax_t)(va_arg(*ap, \
+			uintmax_t)), 8), spec);
+	else if (spec->ll[1] && f != 'O')
+		cast_o(count, ft_itoa_base_lu('o', (unsigned long long int)(va_arg(*ap\
+			, unsigned long long int)), 8), spec);
+	else if (spec->ll[0])
+		cast_o(count, ft_itoa_base_lu('o', (unsigned long int)(va_arg(*ap, \
+			unsigned long int)), 8), spec);
+	else if (spec->hh[1] && f != 'O')
+		cast_o(count, ft_itoa_base_lu('o', (unsigned char)(va_arg(*ap, \
+			unsigned int)), 8), spec);
+	else if (spec->hh[0] && f != 'O')
+		cast_o(count, ft_itoa_base_lu('o', (unsigned short int)(va_arg(*ap, \
+			unsigned int)), 8), spec);
+	else if (f != 'O')
+		cast_o(count, ft_itoa_base_lu('o', (unsigned int)(va_arg(*ap, \
+			unsigned int)), 8), spec);
+}
+
+void	route_sS(int *count, char f, va_list *ap, t_plist *spec)
+{
+	if (f == 's' || f == 'S')
+	{
+		if (spec->ll[0])
+			cast_ws(count, va_arg(*ap, wchar_t *), spec);
 		else
-		{
-			if (spec->fg[1])
-			{
-				if (spec->fg[4] && val >= 0)
-				{
-					ft_putchar('+');
-					(*count)++;
-				}
-				else if (spec->fg[3] && val >= 0)
-				{
-					ft_putchar(' ');
-					(*count)++;
-				}
-				if (val < 0)
-				{
-					ft_putchar('-');
-					val = -val;
-					(*count)++;
-				}
-				while (wid > 0)
-				{
-					ft_putchar('0');
-					wid--;
-					(*count)++;
-				}
-			}
-			else
-			{
-				while (wid > 0)
-				{
-					ft_putchar(' ');
-					wid--;
-					(*count)++;
-				}
-				if (spec->fg[4] && val >= 0)
-				{
-					ft_putchar('+');
-					(*count)++;
-				}
-				else if (spec->fg[3] && val >= 0)
-				{
-					ft_putchar(' ');
-					(*count)++;
-				}
-				if (val < 0)
-				{
-					ft_putchar('-');
-					val = -val;
-					(*count)++;
-				}
-			}
-		}
-		while (prec > cnt)
-		{
-			ft_putchar('0');
-			prec--;
-			(*count)++;
-		}
-		ft_putnbr_ss(minval, val);
-		*count += cnt;
+			cast_s(count, va_arg(*ap, char *), spec);
 	}
 }
 
-int	ft_printf(const char *format, ...)
+void	route_p(int *count, char f, va_list *ap, t_plist *spec)
 {
-	va_list		ap;
-	const char	*f;
-	int			count;
-	t_plist		*spec;
+	spec->fg[0] = 1;
+	cast_xX(count, f, ft_itoa_base_lu('a', (unsigned long int)(va_arg(*ap, \
+		void *)), 16), spec);
+}
 
-	f = format;
-	count = 0;
-	spec = (t_plist *)malloc(sizeof(t_plist));
-	va_start(ap, format);
-	while (*f)
+typedef struct		s_pflist
+{
+	char	*ctrl;
+	char	*capital;
+	char	**form;
+	void	(*pf[8])(int *, char, va_list *, t_plist *);
+}					t_pflist;
+
+int	pfc_init(t_pflist **pfc)
+{
+	*pfc = (t_pflist *)malloc(sizeof(t_pflist));
+	(*pfc)->form = (char **)malloc(sizeof(char *) * 8);
+	(*pfc)->ctrl = ft_strdup("#0- +lhjzLt.");
+	(*pfc)->capital = ft_strdup("DOUSC");
+	(*pfc)->form[0] = ft_strdup("diD");
+	(*pfc)->form[1] = ft_strdup("cC%");
+	(*pfc)->form[2] = ft_strdup( "uU");
+	(*pfc)->form[3] = ft_strdup( "xX");
+	(*pfc)->form[4] = ft_strdup( "oO");
+	(*pfc)->form[5] = ft_strdup( "sS");
+	(*pfc)->form[6] = ft_strdup( "p");
+	(*pfc)->form[7] = ft_strdup( " ");
+	(*pfc)->pf[0] = &route_di;
+	(*pfc)->pf[1] = &route_cC;
+	(*pfc)->pf[2] = &route_uU;
+	(*pfc)->pf[3] = &route_xX;
+	(*pfc)->pf[4] = &route_oO;
+	(*pfc)->pf[5] = &route_sS;
+	(*pfc)->pf[6] = &route_p;
+	(*pfc)->pf[7] = &route_e;
+	return (0);
+}
+
+int	ftp_free(int count, t_pflist *pfc, t_plist *spec)
+{
+	int	i;
+
+	i = -1;
+	if (pfc)
 	{
-		if (print_c(&count, *f++))
-			continue;
-		parse_ctrl(spec, &f);
-		if (*f == 'D' || *f == 'O' || *f == 'U' || *f == 'S' || *f == 'C')
-			spec->ll[0] = 1;
-		if (*f == 'd' || *f == 'i' || *f == 'D')
+		while (++i < 8)
 		{
-			if (spec->jz[1] == 1 && *f != 'D')
-				cast_ssdi(&count, (ssize_t)(va_arg(ap, ssize_t)), spec);
-			else if (spec->jz[0] == 1 && *f != 'D')
-				cast_mdi(&count, (intmax_t)(va_arg(ap, intmax_t)), spec);
-			else if (spec->ll[1] && *f != 'D')
-				cast_hldi(&count, (long long int)(va_arg(ap, long long int)), spec);
-			else if (spec->ll[0])
-				cast_hldi(&count, (long int)(va_arg(ap, long int)), spec);
-			else if (spec->hh[1] && *f != 'D')
-				cast_hldi(&count, (signed char)(va_arg(ap, int)), spec);
-			else if (spec->hh[0] && *f != 'D')
-				cast_hldi(&count, (short int)(va_arg(ap, int)), spec);
-			else if (*f != 'D')
-				cast_hldi(&count, (int)(va_arg(ap, int)), spec);
+			free(pfc->form[i]);
+			pfc->form[i] = NULL;
 		}
-		else if (*f == 'c' || *f == 'C')
-		{
-			if (spec->ll[0])
-				cast_pc_w(&count, (wint_t)(va_arg(ap, wint_t)), spec);
-			else
-				cast_pc(&count, (unsigned char)(va_arg(ap, int)), spec);
-		}
-		else if (*f == 'u' || *f == 'U')
-		{
-			if (spec->jz[1] && *f != 'U')
-				cast_su(&count, (size_t)(va_arg(ap, size_t)), spec);
-			else if (spec->jz[0] && *f != 'U')
-				cast_mu(&count, (uintmax_t)(va_arg(ap, uintmax_t)), spec);
-			else if (spec->ll[1] && *f != 'U')
-				cast_lu(&count, (unsigned long long int)(va_arg(ap, unsigned long long int)), spec);
-			else if (spec->ll[0])
-				cast_lu(&count, (unsigned long int)(va_arg(ap, unsigned long int)), spec);
-			else if (spec->hh[1] && *f != 'U')
-				cast_lu(&count, (unsigned char)(va_arg(ap, unsigned int)), spec);
-			else if (spec->hh[0] && *f != 'U')
-				cast_lu(&count, (unsigned short int)(va_arg(ap, unsigned int)), spec);
-			else if (*f != 'U')
-				cast_lu(&count, (unsigned int)(va_arg(ap, unsigned int)), spec);
-		}
-		else if (*f == 'x' || *f == 'X')
-		{
-			if (spec->jz[1])
-				cast_xX(&count, (*f == 'x' ? 'a' : 'A'), ft_itoa_base_su((*f == 'x' ? 'a' : 'A'), (size_t)(va_arg(ap, size_t)), 16), spec);
-			else if (spec->jz[0])
-				cast_xX(&count, (*f == 'x' ? 'a' : 'A'), ft_itoa_base_mu((*f == 'x' ? 'a' : 'A'), (uintmax_t)(va_arg(ap, uintmax_t)), 16), spec);
-			else if (spec->ll[1])
-				cast_xX(&count, (*f == 'x' ? 'a' : 'A'), ft_itoa_base_lu((*f == 'x' ? 'a' : 'A'), (unsigned long long int)(va_arg(ap, unsigned long long int)), 16), spec);
-			else if (spec->ll[0])
-				cast_xX(&count, (*f == 'x' ? 'a' : 'A'), ft_itoa_base_lu((*f == 'x' ? 'a' : 'A'), (unsigned long int)(va_arg(ap, unsigned long int)), 16), spec);
-			else if (spec->hh[1])
-				cast_xX(&count, (*f == 'x' ? 'a' : 'A'), ft_itoa_base_lu((*f == 'x' ? 'a' : 'A'), (unsigned char)(va_arg(ap, unsigned int)), 16), spec);
-			else if (spec->hh[0])
-				cast_xX(&count, (*f == 'x' ? 'a' : 'A'), ft_itoa_base_lu((*f == 'x' ? 'a' : 'A'), (unsigned short int)(va_arg(ap, unsigned int)), 16), spec);
-			else
-				cast_xX(&count, (*f == 'x' ? 'a' : 'A'), ft_itoa_base_lu((*f == 'x' ? 'a' : 'A'), (unsigned int)(va_arg(ap, unsigned int)), 16), spec);
-		}
-		else if (*f == 'o' || *f == 'O')
-		{
-			if (spec->jz[1] && *f != 'O')
-				cast_o(&count, ft_itoa_base_su('o', (size_t)(va_arg(ap, size_t)), 8), spec);
-			else if (spec->jz[0] && *f != 'O')
-				cast_o(&count, ft_itoa_base_mu('o', (uintmax_t)(va_arg(ap, uintmax_t)), 8), spec);
-			else if (spec->ll[1] && *f != 'O')
-				cast_o(&count, ft_itoa_base_lu('o', (unsigned long long int)(va_arg(ap, unsigned long long int)), 8), spec);
-			else if (spec->ll[0])
-				cast_o(&count, ft_itoa_base_lu('o', (unsigned long int)(va_arg(ap, unsigned long int)), 8), spec);
-			else if (spec->hh[1] && *f != 'O')
-				cast_o(&count, ft_itoa_base_lu('o', (unsigned char)(va_arg(ap, unsigned int)), 8), spec);
-			else if (spec->hh[0] && *f != 'O')
-				cast_o(&count, ft_itoa_base_lu('o', (unsigned short int)(va_arg(ap, unsigned int)), 8), spec);
-			else if (*f != 'O')
-				cast_o(&count, ft_itoa_base_lu('o', (unsigned int)(va_arg(ap, unsigned int)), 8), spec);
-		}
-		else if (*f == 's' || *f == 'S')
-		{
-			if (spec->ll[0])
-				cast_ws(&count, va_arg(ap, wchar_t *), spec);
-			else
-				cast_s(&count, va_arg(ap, char *), spec);
-		}
-		else if (*f == 'p')
-		{
-			spec->fg[0] = 1;
-			cast_xX(&count, 'p', ft_itoa_base_lu('a', (unsigned long int)(va_arg(ap, void *)), 16), spec);
-		}
-		else if (*f == '%')
-			cast_pc(&count, '%', spec);
-		else if (*f != '\0')
-			cast_pc(&count, *f, spec);
-		if (count == -1)
-			break ;
-		else if (*f != '\0')
-			f++;
+		free(pfc->form);
+		pfc->form = NULL;
+		free(pfc->capital);
+		pfc->capital = NULL;
+		free(pfc->ctrl);
+		pfc->ctrl = NULL;
+		free(pfc);
+		pfc = NULL;
 	}
-	va_end(ap);
 	if (spec)
 	{
 		free(spec);
 		spec = NULL;
 	}
 	return (count);
+}
+
+void	ctrl_init(t_plist *spec)
+{
+	int		i;
+
+	i = -1;
+	while (++i < 5)
+	{
+		spec->fg[i] = 0;
+		if (i < 2)
+		{
+			spec->wp[i] = 0;
+			spec->hh[i] = 0;
+			spec->ll[i] = 0;
+			spec->jz[i] = 0;
+		}
+		if (i == 2)
+			spec->wp[i] = 0;
+	}
+}
+
+void	ctrl_width(t_plist *spec, const char **f)
+{
+	int		i;
+	char	*str;
+
+	i = 0;
+	str = NULL;
+	while (ft_isdigit((*f)[i]))
+		i++;
+	str = ft_strsub(*f, 0, i);
+	spec->wp[0] = ft_atoi(str);
+	ft_strdel(&str);
+	while (i-- > 0)
+		(*f)++;
+}
+
+void	ctrl_prec(t_plist *spec, const char **f)
+{
+	int		i;
+	char	*str;
+
+	(*f)++;
+	i = 0;
+	str = NULL;
+	if (**f == '-')
+		(*f)++;
+	while (ft_isdigit((*f)[i]))
+		i++;
+	str = ft_strsub(*f, 0, i);
+	spec->wp[2] = 1;
+	spec->wp[1] = ft_atoi(str);
+	ft_strdel(&str);
+	while (i-- > 0)
+		(*f)++;
+}
+
+void	ctrl_h(t_plist *spec, const char **f)
+{
+	(*f)++;
+	if (**f == 'h')
+	{
+		(*f)++;
+		spec->hh[1] = 1;
+	}
+	else
+		spec->hh[0] = 1;
+}
+
+void	ctrl_l(t_plist *spec, const char **f)
+{
+	(*f)++;
+	if (**f == 'l')
+	{
+		(*f)++;
+		spec->ll[1] = 1;
+	}
+	else
+		spec->ll[0] = 1;
+}
+
+void	ctrl_fg(t_plist *spec, const char **f)
+{
+	if (**f == '#')  
+	{
+		spec->fg[0] = 1;
+		(*f)++;
+	}
+	if (**f == '0')
+	{
+		spec->fg[1] = 1;
+		(*f)++;
+	}
+	if (**f == '-')
+	{
+		spec->fg[2] = 1;
+		(*f)++;
+	}
+	if (**f == ' ')
+	{
+		spec->fg[3] = 1;
+		(*f)++;
+	}
+	if (**f == '+')
+	{
+		spec->fg[4] = 1;
+		(*f)++;
+	}
+}
+
+void	parse_ctrl(t_plist *spec, const char **f, t_pflist *pfc)
+{
+	ctrl_init(spec);
+	while (ft_chrseek(pfc->ctrl, **f, 0) || ft_isdigit(**f))
+	{
+		if (**f >= '1' && **f <= '9')
+			ctrl_width(spec, f);
+		if (**f == '.')
+			ctrl_prec(spec, f);
+		if (**f == 'h')
+			ctrl_h(spec, f);
+		if (**f == 'l')
+			ctrl_l(spec, f);
+		while (ft_chrseek("#0- +", **f, 0))
+			ctrl_fg(spec, f);
+		if (**f == 'L' || **f == 't')
+			(*f)++;
+		if (**f == 'j' || **f == 'z')
+		{
+			if (**f == 'j')
+				spec->jz[0] = 1;
+			else
+				spec->jz[1] = 1;
+			(*f)++;
+		}
+	}
+}
+
+int	ft_printf(const char *format, ...)
+{
+	va_list		ap;
+	int			ci[2];
+	t_plist		*spec;
+	t_pflist	*pfc;
+
+	pfc = NULL;
+	ci[0] = pfc_init(&pfc);
+	spec = (t_plist *)malloc(sizeof(t_plist));
+	va_start(ap, format);
+	while (*format)
+	{
+		if ((ci[1] = print_c(&(ci[0]), *format++)) == 1)
+			continue ;
+		parse_ctrl(spec, &format, pfc);
+		if (ft_chrseek(pfc->capital, *format, ci[1]))
+			spec->ll[0] = 1;
+		while (++(ci[1]) < 8)
+			if (ft_chrseek(pfc->form[ci[1]], *format, ci[1]))
+			{
+				(*(pfc->pf[ci[1]]))(&(ci[0]), *format, &ap, spec);
+				break ;
+			}
+		(*format != '\0') ? format++ : va_end(ap);
+	}
+	return (ftp_free(ci[0], pfc, spec));
 }
