@@ -6,7 +6,7 @@
 #    By: vlevko <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/11/03 13:33:38 by vlevko            #+#    #+#              #
-#    Updated: 2018/01/21 22:55:36 by vlevko           ###   ########.fr        #
+#    Updated: 2018/01/28 13:55:37 by vlevko           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -77,7 +77,23 @@ SRC = ft_arrfree.c \
 	ft_toupper.c \
 	ft_printf.c
 
-OBJ = $(SRC:.c=.o)
+SRCS = srcs/parse_ctrl.c \
+	srcs/ft_itoa_base_slu_oxX.c \
+	srcs/ft_strdup_w.c \
+	srcs/cast_mdi.c \
+	srcs/cast_ssdi.c \
+	srcs/cast_hldi.c \
+	srcs/cast_mu.c \
+	srcs/cast_ws.c \
+	srcs/cast_pc_w.c \
+	srcs/route_di.c \
+	srcs/route_uU.c \
+	srcs/route_pxX.c \
+	srcs/route_oO.c \
+	srcs/route_sS.c \
+	srcs/route_ecC.c
+
+OBJ = $(SRC:.c=.o) $(SRCS:.c=.o)
 
 INC = -I includes/
 

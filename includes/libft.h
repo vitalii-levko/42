@@ -6,7 +6,7 @@
 /*   By: vlevko <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/03 13:47:54 by vlevko            #+#    #+#             */
-/*   Updated: 2018/01/27 14:24:16 by vlevko           ###   ########.fr       */
+/*   Updated: 2018/01/27 23:48:21 by vlevko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,6 @@
 # include <string.h>
 # include <stdlib.h>
 # include <unistd.h>
-# include <limits.h>
-# include <stdint.h>
-# include <wchar.h>
-# include <stdarg.h>
 
 typedef struct		s_list
 {
@@ -26,15 +22,6 @@ typedef struct		s_list
 	size_t			content_size;
 	struct s_list	*next;
 }					t_list;
-
-typedef struct	s_plist
-{
-	int	fg[5];
-	int	wp[3];
-	int	hh[2];
-	int	ll[2];
-	int	jz[2];
-}				t_plist;
 
 int					ft_atoi(const char *str);
 
