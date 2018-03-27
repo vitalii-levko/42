@@ -78,7 +78,7 @@ SRC = ft_arrfree.c \
 	ft_printf.c
 
 SRCS = srcs/parse_ctrl.c \
-	srcs/ft_itoa_base_slu_oxX.c \
+	srcs/ft_itoa_base_slu_oxx.c \
 	srcs/ft_strdup_w.c \
 	srcs/cast_mdi.c \
 	srcs/cast_ssdi.c \
@@ -87,11 +87,11 @@ SRCS = srcs/parse_ctrl.c \
 	srcs/cast_ws.c \
 	srcs/cast_pc_w.c \
 	srcs/route_di.c \
-	srcs/route_uU.c \
-	srcs/route_pxX.c \
-	srcs/route_oO.c \
-	srcs/route_sS.c \
-	srcs/route_ecC.c
+	srcs/route_uu.c \
+	srcs/route_pxx.c \
+	srcs/route_oo.c \
+	srcs/route_ss.c \
+	srcs/route_ecc.c
 
 OBJ = $(SRC:.c=.o) $(SRCS:.c=.o)
 

@@ -12,7 +12,7 @@
 
 #include "../includes/ft_printf.h"
 
-static size_t		ft_cntlen_w(int prec, const wchar_t *res)
+static size_t	ft_cntlen_w(int prec, const wchar_t *res)
 {
 	size_t			cnt;
 	unsigned int	size;
@@ -29,7 +29,7 @@ static size_t		ft_cntlen_w(int prec, const wchar_t *res)
 	return (cnt);
 }
 
-static void			ws_left(int *count, int cwp[3], wchar_t *res)
+static void		ws_left(int *count, int cwp[3], wchar_t *res)
 {
 	if (cwp[2] == 0)
 	{
@@ -38,13 +38,13 @@ static void			ws_left(int *count, int cwp[3], wchar_t *res)
 		return ;
 	}
 	cwp[1] -= cwp[0];
-	*count += cwp[0];		
+	*count += cwp[0];
 	ft_putstr_w(cwp[0], res);
 	while (cwp[1] > 0)
 		pc_di(count, ' ', &(cwp[1]));
 }
 
-static void			ws_right(int *count, int cwp[3], wchar_t *res, t_plist *spec)
+static void		ws_right(int *count, int cwp[3], wchar_t *res, t_plist *spec)
 {
 	if (cwp[2] == 0)
 	{
@@ -53,13 +53,13 @@ static void			ws_right(int *count, int cwp[3], wchar_t *res, t_plist *spec)
 		return ;
 	}
 	cwp[1] -= cwp[0];
-	*count += cwp[0];			
+	*count += cwp[0];
 	while (cwp[1] > 0)
 		pc_di(count, (spec->fg[1] ? '0' : ' '), &(cwp[1]));
 	ft_putstr_w(cwp[0], res);
 }
 
-static void			ft_strdel_w(wchar_t **as)
+static void		ft_strdel_w(wchar_t **as)
 {
 	if (as)
 	{
@@ -68,7 +68,7 @@ static void			ft_strdel_w(wchar_t **as)
 	}
 }
 
-void				cast_ws(int *count, wchar_t *str, t_plist *spec)
+void			cast_ws(int *count, wchar_t *str, t_plist *spec)
 {
 	int				cwp[3];
 	wchar_t			*res;

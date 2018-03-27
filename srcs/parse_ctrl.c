@@ -86,7 +86,7 @@ static void	ctrl_hl(t_plist *spec, const char **f)
 
 static void	ctrl_fg(t_plist *spec, const char **f)
 {
-	if (**f == '#')  
+	if (**f == '#')
 	{
 		spec->fg[0] = 1;
 		(*f)++;

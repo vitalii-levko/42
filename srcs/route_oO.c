@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   route_oO.c                                         :+:      :+:    :+:   */
+/*   route_oo.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vlevko <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -71,12 +71,12 @@ static void			cast_o(int *count, char *val, t_plist *spec)
 	cwp[2] = spec->wp[1];
 	cwp[0] = ft_strlen(val);
 	if (cwp[0] == 0 && cwp[2] == 0)
-		return (oxX_zero(count, ((spec->fg[0]) ? 'O' : 'o'), val, cwp[1]));
+		return (oxx_zero(count, ((spec->fg[0]) ? 'O' : 'o'), val, cwp[1]));
 	if (spec->fg[2])
 	{
 		if (spec->fg[0] && cwp[2] <= cwp[0])
 			pc_di(count, '0', &(cwp[1]));
-		oxX_left(count, val, cwp);
+		oxx_left(count, val, cwp);
 		return ;
 	}
 	o_right(count, cwp, spec);
@@ -85,7 +85,7 @@ static void			cast_o(int *count, char *val, t_plist *spec)
 	ft_strdel(&val);
 }
 
-void				route_oO(int *count, char f, va_list *ap, t_plist *spec)
+void				route_oo(int *count, char f, va_list *ap, t_plist *spec)
 {
 	if (spec->jz[1] && f != 'O')
 		cast_o(count, ft_itoa_base_su('o', (size_t)(va_arg(*ap, size_t)), 8), \

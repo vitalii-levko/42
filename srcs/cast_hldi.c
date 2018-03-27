@@ -69,13 +69,14 @@ static void			hldi_r_noprec(int *count, int wid, long long int *val, \
 	}
 	while (wid > 0)
 		pc_di(count, ' ', &wid);
-	(spec->fg[4] && *val >= 0) ? (pc_di(count, '+', 0)) : \
-	((spec->fg[3] && *val >= 0) ? (pc_di(count, ' ', 0)) : (wid = 0));
+	if (spec->fg[4] && *val >= 0)
+		pc_di(count, '+', 0);
+	else
+		(spec->fg[3] && *val >= 0) ? (pc_di(count, ' ', 0)) : (wid = 0);
 	if (*val < 0)
-	{
 		pc_di(count, '-', 0);
+	if (*val < 0)
 		*val *= -1;
-	}
 }
 
 static void			hldi_right(int *count, int cwpm[4], long long int val, \

@@ -12,7 +12,7 @@
 
 #include "../includes/ft_printf.h"
 
-void							oxX_zero(int *count, char c, char *val, int wid)
+void							oxx_zero(int *count, char c, char *val, int wid)
 {
 	if (c == 'p')
 		wid -= 2;

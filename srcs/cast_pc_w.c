@@ -50,7 +50,7 @@ void				ft_putstr_w(int len, wchar_t const *s)
 			if (bytes == 1)
 				ft_putchar_w((unsigned char)(*s));
 			else if (bytes == 2)
-				cast_loc_two(*s);				
+				cast_loc_two(*s);
 			else if (bytes == 3)
 				cast_loc_three(*s);
 			else

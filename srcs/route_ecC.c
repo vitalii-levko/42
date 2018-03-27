@@ -51,7 +51,7 @@ static void	cast_pc(int *count, char c, t_plist *spec)
 	}
 }
 
-void		route_cC(int *count, char f, va_list *ap, t_plist *spec)
+void		route_cc(int *count, char f, va_list *ap, t_plist *spec)
 {
 	if (f == 'c' || f == 'C')
 	{

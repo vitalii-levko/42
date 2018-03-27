@@ -65,13 +65,14 @@ static void	ssdi_r_noprec(int *count, int wid, ssize_t *val, t_plist *spec)
 	}
 	while (wid > 0)
 		pc_di(count, ' ', &wid);
-	(spec->fg[4] && *val >= 0) ? (pc_di(count, '+', 0)) : \
-	((spec->fg[3] && *val >= 0) ? (pc_di(count, ' ', 0)) : (wid = 0));
+	if (spec->fg[4] && *val >= 0)
+		pc_di(count, '+', 0);
+	else
+		(spec->fg[3] && *val >= 0) ? (pc_di(count, ' ', 0)) : (wid = 0);
 	if (*val < 0)
-	{
 		pc_di(count, '-', 0);
+	if (*val < 0)
 		*val *= -1;
-	}
 }
 
 static void	ssdi_right(int *count, int cwpm[4], ssize_t val, t_plist *spec)

@@ -66,9 +66,9 @@ void			cast_ssdi(int *count, ssize_t val, t_plist *spec);
 
 void			cast_hldi(int *count, long long int val, t_plist *spec);
 
-void			oxX_zero(int *count, char c, char *val, int wid);
+void			oxx_zero(int *count, char c, char *val, int wid);
 
-void			oxX_left(int *count, char *val, int cwp[3]);
+void			oxx_left(int *count, char *val, int cwp[3]);
 
 void			mslu_zero(int *count, int wid);
 
@@ -92,17 +92,17 @@ void			cast_ws(int *count, wchar_t *str, t_plist *spec);
 
 void			route_di(int *count, char f, va_list *ap, t_plist *spec);
 
-void			route_uU(int *count, char f, va_list *ap, t_plist *spec);
+void			route_uu(int *count, char f, va_list *ap, t_plist *spec);
 
-void			route_oO(int *count, char f, va_list *ap, t_plist *spec);
+void			route_oo(int *count, char f, va_list *ap, t_plist *spec);
 
-void			route_xX(int *count, char f, va_list *ap, t_plist *spec);
+void			route_xx(int *count, char f, va_list *ap, t_plist *spec);
 
 void			route_p(int *count, char f, va_list *ap, t_plist *spec);
 
-void			route_sS(int *count, char f, va_list *ap, t_plist *spec);
+void			route_ss(int *count, char f, va_list *ap, t_plist *spec);
 
-void			route_cC(int *count, char f, va_list *ap, t_plist *spec);
+void			route_cc(int *count, char f, va_list *ap, t_plist *spec);
 
 void			route_e(int *count, char f, va_list *ap, t_plist *spec);
 

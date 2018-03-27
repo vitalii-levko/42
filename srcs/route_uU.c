@@ -12,7 +12,7 @@
 
 #include "../includes/ft_printf.h"
 
-static void					ft_putnbr_su(size_t nbr)
+static void	ft_putnbr_su(size_t nbr)
 {
 	size_t					tmp;
 	size_t					cnt;
@@ -30,7 +30,7 @@ static void					ft_putnbr_su(size_t nbr)
 	ft_putchar(nbr + '0');
 }
 
-static void					cast_su(int *count, size_t val, t_plist *spec)
+static void	cast_su(int *count, size_t val, t_plist *spec)
 {
 	size_t					nbr;
 	int						cwp[3];
@@ -58,7 +58,7 @@ static void					cast_su(int *count, size_t val, t_plist *spec)
 	*count += cwp[0];
 }
 
-static void					ft_putnbr_lu(unsigned long long int nbr)
+static void	ft_putnbr_lu(unsigned long long int nbr)
 {
 	unsigned long long int	tmp;
 	unsigned long long int	cnt;
@@ -76,7 +76,7 @@ static void					ft_putnbr_lu(unsigned long long int nbr)
 	ft_putchar(nbr + '0');
 }
 
-static void					cast_lu(int *count, unsigned long long int val, \
+static void	cast_lu(int *count, unsigned long long int val, \
 	t_plist *spec)
 {
 	unsigned long long int	nbr;
@@ -105,7 +105,7 @@ static void					cast_lu(int *count, unsigned long long int val, \
 	*count += cwp[0];
 }
 
-void						route_uU(int *count, char f, va_list *ap, t_plist *spec)
+void		route_uu(int *count, char f, va_list *ap, t_plist *spec)
 {
 	if (spec->jz[1] && f != 'U')
 		cast_su(count, (size_t)(va_arg(*ap, size_t)), spec);

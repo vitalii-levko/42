@@ -85,7 +85,7 @@ static void	cast_s(int *count, char *str, t_plist *spec)
 	ft_strdel(&(rt[1]));
 }
 
-void		route_sS(int *count, char f, va_list *ap, t_plist *spec)
+void		route_ss(int *count, char f, va_list *ap, t_plist *spec)
 {
 	if (f == 's' || f == 'S')
 	{
